@@ -1,3 +1,6 @@
+// creates a new sheet, copies the previous sheet to
+// the new sheet, and copies the previous end column
+// to the new start column
 function newMonth() {
   var app = SpreadsheetApp;
   var ss = app.getActiveSpreadsheet();
@@ -23,4 +26,3 @@ function newMonth() {
   endRange.copyTo(begRange);
 
 }
-

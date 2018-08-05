@@ -1,3 +1,4 @@
+// normalizes the bill for a 30 day period in case of a late reading
 function normalizeBilling() {
   var app = SpreadsheetApp;
   var activeSheet = app.getActiveSpreadsheet().getActiveSheet();
@@ -31,4 +32,3 @@ function normalizeBilling() {
   total = total - total % 10;
   activeSheet.getRange("C"+(lastRow+3)).setValue(activeSheet.getRange("B"+(lastRow+3)).getValue()+total);
 }
-
