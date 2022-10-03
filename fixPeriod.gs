@@ -3,10 +3,10 @@ function normalizeBilling() {
   var app = SpreadsheetApp;
   var activeSheet = app.getActiveSpreadsheet().getActiveSheet();
 
-  var MSECS = 1000 * 60 * 60 * 24;
+  var MSECS = 1000 * 60 * 60 * 24; // for converting timespans to days
   var begDate = activeSheet.getRange("B1").getValue();
   var endDate = activeSheet.getRange("D1").getValue();
-  var diffTime = (endDate - begDate) / MSECS + 1;
+  var diffTime = (endDate - begDate) / MSECS;
   var firstRow = activeSheet.getRange("H2").getValue();
   var lastRow = activeSheet.getRange("I2").getValue();
   var tab = activeSheet.getRange(activeSheet.getRange("J2").getValue()).getValues();
@@ -14,6 +14,7 @@ function normalizeBilling() {
 
   endDate.setDate(billDate);
   activeSheet.getRange('D1').setValue(endDate);
+  var monLength = (endDate - begDate) / MSECS;
 
   //var total = activeSheet.getRange("D"+firstRow+":D"+lastRow).getValues();
 
@@ -22,7 +23,7 @@ function normalizeBilling() {
     var end = "C"+i;
     var net = "D"+i;
     var total = activeSheet.getRange(net).getValue();
-    total = (total / diffTime) * 31;
+    total = (total / diffTime) * monLength;
     total = total - total % 10;
     activeSheet.getRange(end).setValue(activeSheet.getRange(beg).getValue()+total);
   }
