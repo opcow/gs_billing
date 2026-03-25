@@ -1,8 +1,13 @@
+// creates a new sheet, copies the previous sheet to
+// the new sheet, and copies the previous end column
+// to the new start column
 function newMonth() {
 
   var app = SpreadsheetApp;
   var ss = app.getActiveSpreadsheet();
+  ss.setActiveSheet(ss.getSheets()[ss.getNumSheets()-1]);
   var activeSheet = ss.getActiveSheet();
+
   // copy the sheet
   var newSheet = activeSheet.copyTo(ss);
   app.flush(); 
