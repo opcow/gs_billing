@@ -52,3 +52,4 @@ function newMonth() {
     //   p2.addEditors(p.getEditors());      // except those permitted for original
     // }
   }
+}
