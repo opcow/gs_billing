@@ -15,8 +15,8 @@ function calcBill(gal) {
   // row[1] contains the rate per row[2]
   for (var i = 0, row; row = tab[i]; i++) {
     bracket = row[0];
-    if(bracket == '-' || gal <= bracket){
-	  bracket = gal;
+    if (bracket == '-' || gal <= bracket) {
+      bracket = gal;
       total = total + bracket * row[1] / row[2];
       break;
     } else {
