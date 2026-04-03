@@ -13,16 +13,16 @@ function calcBill(gal) {
   // row[0] holds the bracket size
   // or "-" meaning all remaining gallons
   // row[1] contains the rate per row[2]
-for (var i = 0; i < tab.length; i++) {
-  var row = tab[i];
-  bracket = row[0];
-  if(bracket == '-' || gal <= bracket){
-	  bracket = gal;
-    total = total + bracket * row[1] / row[2];
-    break;
-  } else {
-    total = total + bracket * row[1] / row[2];
-  }
+  for (var i = 0; i < tab.length; i++) {
+    var row = tab[i];
+    bracket = row[0];
+    if (bracket == '-' || gal <= bracket) {
+      bracket = gal;
+      total = total + bracket * row[1] / row[2];
+      break;
+    } else {
+      total = total + bracket * row[1] / row[2];
+    }
     gal = gal - bracket;
   }
   return total;
@@ -35,20 +35,20 @@ function setBillingDates(newSheet, latestSheet) {
   var endDate = newSheet.getRange("D1");
   var tempEnd = endDate.getValue();
   var tempBeg = endDate.getValue();
- 
+
   // set the beginning/end day of month to the 4/3
   var tabAddr = latestSheet.getRange('J2').getValue();
   var billingDay = latestSheet.getRange(tabAddr).getValues()[0][4];
   tempEnd.setDate(billingDay);
-  tempBeg.setDate(billingDay+1);
+  tempBeg.setDate(billingDay + 1);
   begDate.setValue(tempBeg);
 
- // set new month and handle new year change
+  // set new month and handle new year change
   var oldMonth = tempEnd.getMonth();
-  tempEnd.setMonth((oldMonth+1) % 12);
+  tempEnd.setMonth((oldMonth + 1) % 12);
   if (oldMonth == 11.0) {
-    tempEnd.setFullYear(tempEnd.getFullYear()+1);
-    }
+    tempEnd.setFullYear(tempEnd.getFullYear() + 1);
+  }
   endDate.setValue(tempEnd);
 }
 
@@ -60,11 +60,11 @@ function newMonth() {
 
   var app = SpreadsheetApp;
   var ss = app.getActiveSpreadsheet();
-  var latestSheet = ss.getSheets()[ss.getNumSheets()-1]
+  var latestSheet = ss.getSheets()[ss.getNumSheets() - 1]
 
   // copy the sheet
   var newSheet = latestSheet.copyTo(ss);
-  app.flush(); 
+  app.flush();
   ss.setActiveSheet(newSheet);
 
   setBillingDates(newSheet, latestSheet);
@@ -73,8 +73,8 @@ function newMonth() {
   // copy end reading to start reading
   var firstRow = newSheet.getRange("H2").getValue();
   var lastRow = newSheet.getRange("I2").getValue();
-  var endRange = newSheet.getRange("C"+firstRow+":C"+lastRow);
-  var begRange = newSheet.getRange("B"+firstRow+":B"+lastRow);
+  var endRange = newSheet.getRange("C" + firstRow + ":C" + lastRow);
+  var begRange = newSheet.getRange("B" + firstRow + ":B" + lastRow);
   endRange.copyTo(begRange);
 
   var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
@@ -112,19 +112,19 @@ function normalizeBilling() {
   activeSheet.getRange("D1").setValue(endDate);
 
   for (var i = firstRow; i <= lastRow; i++) {
-    var beg = "B"+i;
-    var end = "C"+i;
-    var net = "D"+i;
+    var beg = "B" + i;
+    var end = "C" + i;
+    var net = "D" + i;
     var total = activeSheet.getRange(net).getValue();
     total = (total / diffTime) * monLength;
     total = total - total % 10;
-    activeSheet.getRange(end).setValue(activeSheet.getRange(beg).getValue()+total);
+    activeSheet.getRange(end).setValue(activeSheet.getRange(beg).getValue() + total);
   }
   // do main meter which is 3 rows below the last
-  total = activeSheet.getRange("D"+(lastRow+3)).getValue();
+  total = activeSheet.getRange("D" + (lastRow + 3)).getValue();
   total = (total / diffTime) * monLength;
   total = total - total % 10;
-  activeSheet.getRange("C"+(lastRow+3)).setValue(activeSheet.getRange("B"+(lastRow+3)).getValue()+total);
+  activeSheet.getRange("C" + (lastRow + 3)).setValue(activeSheet.getRange("B" + (lastRow + 3)).getValue() + total);
 }
 
 function onEdit() {
