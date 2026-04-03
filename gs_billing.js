@@ -45,10 +45,7 @@ function setBillingDates(newSheet, latestSheet) {
 
   // set new month and handle new year change
   var oldMonth = tempEnd.getMonth();
-  tempEnd.setMonth((oldMonth + 1) % 12);
-  if (oldMonth == 11.0) {
-    tempEnd.setFullYear(tempEnd.getFullYear() + 1);
-  }
+  tempEnd.setMonth(oldMonth + 1);
   endDate.setValue(tempEnd);
 }
 
@@ -99,14 +96,14 @@ function normalizeBilling() {
   var begDate = activeSheet.getRange("B1").getValue();
   var endDate = activeSheet.getRange("D1").getValue();
   var diffTime = Math.ceil((endDate - begDate) / (1000 * 3600 * 24)) + 1;
-  if (diffTime < 1) { throw new Error("End date is the same or before the end date."); }
+  if (diffTime < 1) { throw new Error("End date is the same as or before the begin date."); }
   var firstRow = activeSheet.getRange("H2").getValue();
   var lastRow = activeSheet.getRange("I2").getValue();
   var tab = activeSheet.getRange(activeSheet.getRange("J2").getValue()).getValues();
 
   var billDay = tab[0][4];
   var billMonth = begDate.getMonth();
-  var t = new Date(begDate.getYear(), begDate.getMonth() + 1, 0);
+  var t = new Date(begDate.getFullYear(), begDate.getMonth() + 1, 0);
   var monLength = t.getDate();
   endDate.setMonth(billMonth + 1, billDay);
   activeSheet.getRange("D1").setValue(endDate);
@@ -121,26 +118,24 @@ function normalizeBilling() {
     activeSheet.getRange(end).setValue(activeSheet.getRange(beg).getValue() + total);
   }
   // do main meter which is 3 rows below the last
-  total = activeSheet.getRange("D" + (lastRow + 3)).getValue();
+  var total = activeSheet.getRange("D" + (lastRow + 3)).getValue();
   total = (total / diffTime) * monLength;
   total = total - total % 10;
   activeSheet.getRange("C" + (lastRow + 3)).setValue(activeSheet.getRange("B" + (lastRow + 3)).getValue() + total);
 }
 
-function onEdit() {
-  var app = SpreadsheetApp;
-  var ss = app.getActiveSpreadsheet();
-  var activeCell = ss.getActiveSheet().getActiveCell()
-  let ref = activeCell.getA1Notation();
+function onEdit(e) {
+  const ss = e.source;
+  const ref = e.range.getA1Notation();
+
+  if (ref !== "A18" && ref !== "A20") return;
+
+  e.range.uncheck();
+  ss.getActiveSheet().setActiveSelection('M37');
+
   if (ref == "A18") {
-    ss.getActiveSheet().setActiveSelection('M37');
-    activeCell.uncheck();
     newMonth();
-  }
-  else if (ref == "A20") {
-    ss.getActiveSheet().setActiveSelection('M37');
-    activeCell.uncheck();
+  } else {
     normalizeBilling();
   }
-
 }
