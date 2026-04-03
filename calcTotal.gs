@@ -1,3 +1,7 @@
+// cell J2 contains the address of the rate table
+// calcBill(2000, [[2000, 2.93, 1000]]);
+// table = [[2000, 3.00, 1000, 25.20],[4999, 8.00, 1000],['-', 9.00, 1000]];
+
 function calcBill(gal) {
   var app = SpreadsheetApp;
   var activeSheet = app.getActiveSpreadsheet().getActiveSheet();
