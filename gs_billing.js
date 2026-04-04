@@ -7,7 +7,7 @@ function calcBill(gal) {
   var activeSheet = app.getActiveSpreadsheet().getActiveSheet();
   var tabAddr = activeSheet.getRange('J2').getValue();
   var tab = activeSheet.getRange(tabAddr).getValues();
-  var total = tab[0][3]; // sets total to minimum charge
+  var total = Number(tab[0][3]) || 0; // sets total to minimum charge
   var bracket;
   // loop through each rate bracket
   // row[0] holds the bracket size
@@ -33,8 +33,9 @@ function setBillingDates(newSheet, latestSheet) {
   // update the dates
   var begDate = newSheet.getRange("B1");
   var endDate = newSheet.getRange("D1");
-  var tempEnd = endDate.getValue();
-  var tempBeg = endDate.getValue();
+  var baseEnd = new Date(endDate.getValue());
+  var tempEnd = new Date(baseEnd);
+  var tempBeg = new Date(baseEnd);
 
   // set the beginning/end day of month to the 4/3
   var tabAddr = latestSheet.getRange('J2').getValue();
@@ -74,17 +75,26 @@ function newMonth() {
   var begRange = newSheet.getRange("B" + firstRow + ":B" + lastRow);
   endRange.copyTo(begRange);
 
-  var protections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+  var protections = latestSheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
   for (var i = 0; i < protections.length; i++) {
     var p = protections[i];
     var rangeNotation = p.getRange().getA1Notation();
     var p2 = newSheet.getRange(rangeNotation).protect();
     p2.setDescription(p.getDescription());
     p2.setWarningOnly(p.isWarningOnly());
-    // if (!p.isWarningOnly()) {
-    //   p2.removeEditors(p2.getEditors());  // remove editors 
-    //   p2.addEditors(p.getEditors());      // except those permitted for original
-    // }
+    if (!p.isWarningOnly()) {
+      var editors = p.getEditors();
+      var newEditors = p2.getEditors();
+      if (newEditors.length) {
+        p2.removeEditors(newEditors);
+      }
+      if (editors.length) {
+        p2.addEditors(editors);
+      }
+      if (p.canDomainEdit() !== p2.canDomainEdit()) {
+        p2.setDomainEdit(p.canDomainEdit());
+      }
+    }
   }
 }
 
@@ -129,10 +139,12 @@ function onEdit(e) {
 
   const range = e.range;
   const sheet = range.getSheet();
+  const ss = sheet.getParent();
   const cell = range.getA1Notation();
 
   if (range.getNumRows() !== 1 || range.getNumColumns() !== 1) return;
   if (e.value !== 'TRUE') return;
+  if (sheet.getSheetId() !== ss.getSheets()[ss.getNumSheets() - 1].getSheetId()) return;
 
   const actions = {
     A18: newMonth,
@@ -149,4 +161,6 @@ function onEdit(e) {
   sheet.setActiveSelection('M37');
   action();
 }
+
+
 
