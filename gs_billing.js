@@ -144,6 +144,10 @@ function onEdit(e) {
 
   if (range.getNumRows() !== 1 || range.getNumColumns() !== 1) return;
   if (e.value !== 'TRUE') return;
+
+  if (range.isChecked() !== null) {
+    range.uncheck();
+  }
   if (sheet.getSheetId() !== ss.getSheets()[ss.getNumSheets() - 1].getSheetId()) return;
 
   const actions = {
@@ -154,13 +158,8 @@ function onEdit(e) {
   const action = actions[cell];
   if (!action) return;
 
-  if (range.isChecked() !== null) {
-    range.uncheck();
-  }
-
   sheet.setActiveSelection('M37');
   action();
 }
-
 
 
