@@ -135,31 +135,18 @@ function normalizeBilling() {
 }
 
 function onEdit(e) {
-  if (!e || !e.range) return;
+  const ss = e.source;
+  const ref = e.range.getA1Notation();
 
-  const range = e.range;
-  const sheet = range.getSheet();
-  const ss = sheet.getParent();
-  const cell = range.getA1Notation();
+  if (ref !== "A18" && ref !== "A20") return;
 
-  if (range.getNumRows() !== 1 || range.getNumColumns() !== 1) return;
-  if (e.value !== 'TRUE') return;
+  e.range.uncheck();
+  ss.getActiveSheet().setActiveSelection('M37');
 
-  if (range.isChecked() !== null) {
-    range.uncheck();
+  if (ref == "A18") {
+    newMonth();
+  } else {
+    normalizeBilling();
   }
-  if (sheet.getSheetId() !== ss.getSheets()[ss.getNumSheets() - 1].getSheetId()) return;
-
-  const actions = {
-    A18: newMonth,
-    A20: normalizeBilling,
-  };
-
-  const action = actions[cell];
-  if (!action) return;
-
-  sheet.setActiveSelection('M37');
-  action();
 }
-
 
